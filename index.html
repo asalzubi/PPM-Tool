@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enterprise PPM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --color-primary: #106FB3; /* BLUE/600 */
+        --color-accent: #3EA5F1; /* BLUE/300 */
+        --color-success: #7CC966;
+        --color-warning: #FDBF2A;
+        --color-danger: #DC2626;
+
+        /* Alfanar Palette for reference */
+        --blue-900: #03274D;
+        --blue-800: #074B79;
+        --blue-700: #0B5C96;
+        --blue-600: #106FB3;
+        --blue-500: #1480D0;
+        --blue-400: #2090E2;
+        --blue-300: #3EA5F1;
+        --blue-200: #65B9F7;
+        --blue-100: #8ECCFA;
+        --blue-50: #D7EEFF;
+        
+        --chart-color-1: var(--blue-500);
+        --chart-color-2: var(--blue-300);
+        --chart-color-3: var(--blue-700);
+        --chart-color-4: var(--blue-400);
+        --chart-color-5: var(--blue-900);
+      }
+      .drag-grid-background {
+        background-image: 
+            linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+        background-size: 2rem 2rem;
+        background-position: center;
+      }
+      .dark .drag-grid-background {
+          background-image: 
+              linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      }
+      @keyframes wiggle {
+        0%, 100% { transform: rotate(-0.5deg); }
+        50% { transform: rotate(0.5deg); }
+      }
+      .wiggling-card {
+        animation: wiggle 0.8s ease-in-out infinite;
+      }
+      .placeholder-card {
+        background-color: rgba(128, 128, 128, 0.1);
+        border: 2px dashed #9ca3af; /* gray-400 */
+        border-radius: 0.5rem; /* rounded-lg */
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        grid-column: span 1;
+        transition: all 0.2s ease-in-out;
+      }
+      .dragging-card {
+        opacity: 0.9;
+        transform: scale(1.03) rotate(2deg);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+        transition: none; /* Prevent transition when applying class */
+      }
+      .toggle-checkbox:checked {
+        @apply: right-0 border-green-400;
+        right: 0;
+        border-color: var(--color-primary);
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        @apply: bg-green-400;
+        background-color: var(--color-primary);
+      }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.4",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.546.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.25.0",
+    "recharts": "https://aistudiocdn.com/recharts@^3.3.0",
+    "window": "https://aistudiocdn.com/window@^4.2.7",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
+    "pptxgenjs": "https://aistudiocdn.com/pptxgenjs@^3.12.0",
+    "@testing-library/jest-dom": "https://aistudiocdn.com/@testing-library/jest-dom@^6.9.1",
+    "@jest/globals": "https://aistudiocdn.com/@jest/globals@^30.2.0",
+    "@testing-library/react": "https://aistudiocdn.com/@testing-library/react@^16.3.0"
+  }
+}
+</script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

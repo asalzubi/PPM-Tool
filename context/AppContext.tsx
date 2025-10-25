@@ -152,6 +152,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 setCurrentUser(user);
                 setIsAuthenticated(true);
                 applyTheme(data.settings);
+            } else {
+                 // Pre-load settings for login page branding even when not authenticated
+                const appSettings = await api.fetchSettings();
+                setSettings(appSettings);
+                applyTheme(appSettings);
             }
             setIsLoading(false);
         };
@@ -180,7 +185,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (authedUser) {
             setCurrentUser(authedUser);
             setIsAuthenticated(true);
-            await createLog('User Logged In', `${authedUser.firstName} ${authedUser.lastName} logged in.`);
+            
             // Fetch data after login
             const data = await api.fetchAllData();
             setAllProjects(data.projects);
@@ -191,6 +196,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             setUsers(data.users);
             setLogs(data.logs);
             applyTheme(data.settings);
+            
+            await api.addLog('User Logged In', `${authedUser.firstName} ${authedUser.lastName} logged in.`, `${authedUser.firstName} ${authedUser.lastName}`);
+            
             navigate('/');
             return true;
         }
@@ -293,12 +301,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 const data = importData(text);
                 if (window.confirm('Importing will overwrite all current data. Continue?')) {
                     await api.importAllData(data);
-                    setAllProjects(data.projects);
-                    setSettings(data.settings);
-                    setTimelineEvents(data.timelineEvents);
-                    setStakeholders(data.stakeholders);
-                    setWeeklyTasks(data.weeklyTasks);
-                    applyTheme(data.settings);
+                    
+                    // Force reload all data from the new DB source
+                    const freshData = await api.fetchAllData();
+                    setAllProjects(freshData.projects);
+                    setSettings(freshData.settings);
+                    setTimelineEvents(freshData.timelineEvents);
+                    setStakeholders(freshData.stakeholders);
+                    setWeeklyTasks(freshData.weeklyTasks);
+                    setUsers(freshData.users);
+                    setLogs(freshData.logs);
+                    applyTheme(freshData.settings);
+
                     createLog('Data Imported', 'Data was imported from a file.');
                     setToast({ message: 'Data imported successfully!', type: 'success' });
                 }
@@ -311,11 +325,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const clearAllData = () => openClearDataModal();
     const confirmClearData = async () => {
-        await api.clearAllData();
-        createLog('Data Cleared', 'All application data was cleared.');
+        const user = currentUser;
         closeClearDataModal();
-        logout();
-        setToast({ message: 'Session ended and all data has been cleared.', type: 'success' });
+        if (user) {
+            await api.addLog('Data Cleared', 'All application data was cleared.', `${user.firstName} ${user.lastName}`);
+        }
+        await api.clearAllData();
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+        setToast({ message: 'Session ended and all data has been cleared. The app will now reload.', type: 'success' });
+        // Give toast time to show before reloading
+        setTimeout(() => window.location.reload(), 1500);
     };
 
     const openProjectModal = (project: Project | null) => { setSelectedProject(project); setIsProjectModalOpen(true); };

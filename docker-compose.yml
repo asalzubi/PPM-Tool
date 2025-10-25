@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  ppm-app:
+    # This tells Docker Compose to build the image from the Dockerfile in the current directory
+    build: .
+    container_name: ppm-app
+    ports:
+      # Map port 8080 on your host to port 80 in the container.
+      # You can change 8080 to any other available port on your machine.
+      - "8080:80"
+    environment:
+      # Portainer will prompt you to enter a value for this variable.
+      - API_KEY=${API_KEY}
+    restart: unless-stopped
